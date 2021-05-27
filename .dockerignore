@@ -1,0 +1,12 @@
+# ignore everything
+*
+
+# include build output files
+!/artifacts
+!/artifacts/**
+
+# include docker files
+!/devops/docker/**
+
+# include helmchart files
+!/devops/helmcharts/**
