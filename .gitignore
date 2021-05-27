@@ -276,7 +276,8 @@ FrontEnd/build/
 *.js.map
 
 # docker
-/devops/data/**/
+/docker/data/**/
+/docker/deploy/**/
 .env
 
 # secrets
