@@ -276,8 +276,13 @@ FrontEnd/build/
 *.js.map
 
 # docker
-/docker/data/**/
-/docker/deploy/**/
+/docker/data/cm/*/*
+/docker/data/engine/catalogs/*
+/docker/data/engine/*/*/*
+/docker/data/mssql-data/*
+/docker/data/solr-data/*
+
+/docker/deploy/*/*
 .env
 
 # secrets
