@@ -1,12 +1,19 @@
-# ignore everything
-*
+# folders
+.git
+.gitignore
+.vs
+.vscode
+build
+docker
+packages
+**/bin/
+**/obj/
+**/out/
+**/node_modules/
 
-# include build output files
-!/artifacts
-!/artifacts/**
-
-# include docker files
-!/devops/docker/**
-
-# include helmchart files
-!/devops/helmcharts/**
+# files
+*Dockerfile
+docker-compose*
+**/*.md
+*.ps1
+scjssconfig.json

@@ -1,0 +1,112 @@
+version: "2.4"
+
+services:
+
+  solution:
+    image: ${REGISTRY}${COMPOSE_PROJECT_NAME}-solution:${VERSION:-latest}
+    build:
+      context: .
+      args:
+        BASE_IMAGE: ${SOLUTION_BASE_IMAGE}
+        BUILD_IMAGE: ${SOLUTION_BUILD_IMAGE}
+        BUILD_CONFIGURATION: ${BUILD_CONFIGURATION}
+    scale: 0
+    
+  # mssql:
+  #   build:
+  #     isolation: ${ISOLATION}
+  #     context: .\docker\build\mssql\standalone
+  #     dockerfile: ..\standalone\Dockerfile
+  #     args:
+  #       BASE_IMAGE: ${XC_NONPRODUCTION_SITECORE_DOCKER_REGISTRY}sitecore-xc0-mssql:${XC_PACKAGES_TAG}
+  #       SITECORE_CORE_DB: ${SITECORE_CORE_DB}
+  #   image: xc0-mssql
+  
+  # mssql-init:
+  #   build:
+  #     isolation: ${ISOLATION}
+  #     context: .\docker\build\mssql\init
+  #     dockerfile: ..\init\Dockerfile
+  #     args:
+  #       BASE_IMAGE: ${XC_NONPRODUCTION_SITECORE_DOCKER_REGISTRY}sitecore-xc0-mssql-init:${XP_SITECORE_TAG}
+  #       TOPOLOGY: xc0
+  #   image: xc0-mssql-init
+
+  # Mount our Solr data folder
+  # solr:
+  #   volumes:
+  #     - ${LOCAL_DATA_PATH}\solr-data:c:\data
+
+  # solr-init:
+  #   build:
+  #     isolation: ${ISOLATION}
+  #     context: ./docker/build/solr-init
+  #     args:
+  #       BASE_IMAGE: ${XP_SITECORE_DOCKER_REGISTRY}sitecore-xp1-solr-init:${XP_SITECORE_TAG}
+  #       XC_TOPOLOGY: xc1
+  #       SOLR_XDB_SCHEMA_FILE: "/Content/Website/App_Data/solrcommands/schema.json"
+  #   image: xc1-solr-init
+  
+  cm:
+    image: ${COMPOSE_PROJECT_NAME}-xp0-cm
+    build:
+      context: ./docker/build/cm
+      args:
+        BASE_IMAGE: ${XC_SITECORE_DOCKER_REGISTRY}sitecore-xc0-cm:${XC_PACKAGES_TAG}
+        TOOLING_IMAGE: ${SITECORE_TOOLS_REGISTRY}sitecore-docker-tools-assets:${TOOLS_VERSION}
+        SOLUTION_IMAGE: ${REGISTRY}${COMPOSE_PROJECT_NAME}-solution:${VERSION:-latest}
+    depends_on:
+      - solution
+    volumes:
+      - ${LOCAL_DEPLOY_PATH}\website:C:\deploy
+      - ${LOCAL_DATA_PATH}\cm\logs:C:\inetpub\wwwroot\App_Data\logs
+    environment:
+      SITECORE_DEVELOPMENT_PATCHES: CustomErrorsOff      
+    entrypoint: powershell -Command "& C:\tools\entrypoints\iis\Development.ps1"
+  # ============================================================
+
+
+  # xconnect:
+  #   image: ${REGISTRY}${COMPOSE_PROJECT_NAME}-xp0-xconnect:${VERSION:-latest}
+  #   build:
+  #     context: ./docker/build/xconnect
+  #     args:
+  #       BASE_IMAGE: ${SITECORE_DOCKER_REGISTRY}sitecore-xp0-xconnect:${SITECORE_VERSION}
+  #       TOOLING_IMAGE: ${SITECORE_TOOLS_REGISTRY}sitecore-docker-tools-assets:${TOOLS_VERSION}
+  #       SOLUTION_IMAGE: ${REGISTRY}${COMPOSE_PROJECT_NAME}-solution:${VERSION:-latest}
+  #   depends_on:
+  #     - solution
+  #   volumes:
+  #     - ${LOCAL_DEPLOY_PATH}\xconnect:C:\deploy
+  #   entrypoint: powershell -Command "& C:\tools\entrypoints\iis\Development.ps1"
+
+  # xdbsearchworker:
+  #   image: ${REGISTRY}${COMPOSE_PROJECT_NAME}-xp0-xdbsearchworker:${VERSION:-latest}
+  #   build:
+  #     context: ./docker/build/xdbsearchworker
+  #     args:
+  #       BASE_IMAGE: ${SITECORE_DOCKER_REGISTRY}sitecore-xp0-xdbsearchworker:${SITECORE_VERSION}
+  #       SOLUTION_IMAGE: ${REGISTRY}${COMPOSE_PROJECT_NAME}-solution:${VERSION:-latest}
+  #   depends_on:
+  #     - solution
+
+  # xdbautomationworker:
+  #   image: ${REGISTRY}${COMPOSE_PROJECT_NAME}-xp0-xdbautomationworker:${VERSION:-latest}
+  #   build:
+  #     context: ./docker/build/xdbautomationworker
+  #     args:
+  #       BASE_IMAGE: ${SITECORE_DOCKER_REGISTRY}sitecore-xp0-xdbautomationworker:${SITECORE_VERSION}
+  #       SOLUTION_IMAGE: ${REGISTRY}${COMPOSE_PROJECT_NAME}-solution:${VERSION:-latest}
+  #   depends_on:
+  #     - solution
+
+  # cortexprocessingworker:
+  #   image: ${REGISTRY}${COMPOSE_PROJECT_NAME}-xp0-cortexprocessingworker:${VERSION:-latest}
+  #   build:
+  #     context: ./docker/build/cortexprocessingworker
+  #     args:
+  #       BASE_IMAGE: ${SITECORE_DOCKER_REGISTRY}sitecore-xp0-cortexprocessingworker:${SITECORE_VERSION}
+  #       SOLUTION_IMAGE: ${REGISTRY}${COMPOSE_PROJECT_NAME}-solution:${VERSION:-latest}
+  #   depends_on:
+  #     - solution
+  
