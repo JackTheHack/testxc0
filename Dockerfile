@@ -39,6 +39,8 @@ RUN Invoke-Expression 'robocopy C:\build\src C:\out\transforms /s /ndl /njh /njs
 # Build website with file publish
 RUN msbuild .\src\DockerExamples.Website\DockerExamples.Website.csproj /p:Configuration=$env:BUILD_CONFIGURATION /p:DeployOnBuild=True /p:DeployDefaultTarget=WebPublish /p:WebPublishMethod=FileSystem /p:PublishUrl=C:\out\website
 
+# TODO: Build CommerceEngine project here
+
 # Build XConnect with file publish
 #RUN msbuild .\src\DockerExamples.XConnect\DockerExamples.XConnect.csproj /p:Configuration=$env:BUILD_CONFIGURATION /p:DeployOnBuild=True /p:DeployDefaultTarget=WebPublish /p:WebPublishMethod=FileSystem /p:PublishUrl=C:\out\xconnect
 

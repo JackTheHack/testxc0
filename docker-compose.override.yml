@@ -63,6 +63,63 @@ services:
     environment:
       SITECORE_DEVELOPMENT_PATCHES: CustomErrorsOff      
     entrypoint: powershell -Command "& C:\tools\entrypoints\iis\Development.ps1"
+
+  engine-ops:    
+    image: ${COMPOSE_PROJECT_NAME}-xp0-ops
+    build: 
+      context: ./docker/build/engine
+      args:
+        BASE_IMAGE: ${XC_SITECORE_DOCKER_REGISTRY}sitecore-xc-engine:${XC_PACKAGES_TAG}
+        SOLUTION_IMAGE: ${REGISTRY}${COMPOSE_PROJECT_NAME}-solution:${VERSION:-latest}
+        ROLE: ops
+    depends_on: 
+      - solution
+    volumes:
+      - ${LOCAL_DEPLOY_PATH}\engine:C:\deploy
+      - ${LOCAL_DATA_PATH}\engine\ops\logs:C:\inetpub\wwwroot\wwwroot\logs
+
+  engine-shops:    
+    image: ${COMPOSE_PROJECT_NAME}-xp0-ops
+    build: 
+      context: ./docker/build/engine
+      args:
+        BASE_IMAGE: ${XC_SITECORE_DOCKER_REGISTRY}sitecore-xc-engine:${XC_PACKAGES_TAG}
+        SOLUTION_IMAGE: ${REGISTRY}${COMPOSE_PROJECT_NAME}-solution:${VERSION:-latest}
+        ROLE: ops
+    depends_on: 
+      - solution
+    volumes:
+      - ${LOCAL_DEPLOY_PATH}\engine:C:\deploy
+      - ${LOCAL_DATA_PATH}\engine\ops\logs:C:\inetpub\wwwroot\wwwroot\logs        
+
+  engine-authoring:    
+    image: ${COMPOSE_PROJECT_NAME}-xp0-ops
+    build: 
+      context: ./docker/build/engine
+      args:
+        BASE_IMAGE: ${XC_SITECORE_DOCKER_REGISTRY}sitecore-xc-engine:${XC_PACKAGES_TAG}
+        SOLUTION_IMAGE: ${REGISTRY}${COMPOSE_PROJECT_NAME}-solution:${VERSION:-latest}
+        ROLE: ops
+    depends_on: 
+      - solution
+    volumes:
+      - ${LOCAL_DEPLOY_PATH}\engine:C:\deploy
+      - ${LOCAL_DATA_PATH}\engine\ops\logs:C:\inetpub\wwwroot\wwwroot\logs        
+
+  engine-minions:    
+    image: ${COMPOSE_PROJECT_NAME}-xp0-ops
+    build: 
+      context: ./docker/build/engine
+      args:
+        BASE_IMAGE: ${XC_SITECORE_DOCKER_REGISTRY}sitecore-xc-engine:${XC_PACKAGES_TAG}
+        SOLUTION_IMAGE: ${REGISTRY}${COMPOSE_PROJECT_NAME}-solution:${VERSION:-latest}
+        ROLE: ops
+    depends_on: 
+      - solution
+    volumes:
+      - ${LOCAL_DEPLOY_PATH}\engine:C:\deploy
+      - ${LOCAL_DATA_PATH}\engine\ops\logs:C:\inetpub\wwwroot\wwwroot\logs        
+
   # ============================================================
 
 
