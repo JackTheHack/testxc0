@@ -47,6 +47,28 @@ services:
   #       SOLR_XDB_SCHEMA_FILE: "/Content/Website/App_Data/solrcommands/schema.json"
   #   image: xc1-solr-init
   
+  mssql:
+    build:
+      isolation: ${ISOLATION}
+      context: ./docker/build/mssql
+      dockerfile: ./standalone/Dockerfile
+      args:
+        #BASE_IMAGE: ${XP_SITECORE_DOCKER_REGISTRY}sitecore-xp1-mssql:${XP_SITECORE_TAG}
+        BASE_IMAGE: ${XC_NONPRODUCTION_SITECORE_DOCKER_REGISTRY}sitecore-xc0-mssql:${XC_PACKAGES_TAG}
+        SITECORE_CORE_DB: ${SITECORE_CORE_DB}
+    image: xc0-mssql
+  
+  mssql-init:
+    build:
+      isolation: ${ISOLATION}
+      context: ./docker/build/mssql
+      dockerfile: ./init/Dockerfile
+      args:
+        #BASE_IMAGE: ${XP_SITECORE_DOCKER_REGISTRY}sitecore-xp1-mssql-init:${XP_SITECORE_TAG}
+        BASE_IMAGE: mcr.microsoft.com/powershell:lts-nanoserver-1809
+        TOPOLOGY: xc0
+    image: xc0-mssql-init
+
   cm:
     image: ${COMPOSE_PROJECT_NAME}-xp0-cm
     build:
