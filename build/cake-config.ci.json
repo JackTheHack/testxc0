@@ -1,0 +1,13 @@
+{
+  "ProjectName": "IRD",
+  "SolutionName": "IR.sln",
+  "ProjectFolder": "./",
+  "ProjectBuildFolder": "./build",
+  "BuildConfiguration": "Release",
+  "BuildToolVersions": "VS2017",
+  "RunCleanBuilds": false,
+  "DeploymentTarget": "Production",
+  "DeployFolder": "./artifacts",
+  "version": "0.0.0",
+  "CDN": "false"
+}

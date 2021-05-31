@@ -1,0 +1,16 @@
+{
+  "ProjectName": "IRD",
+  "XConnectRoot": "./artifacts/xconnect",
+  "InstanceUrl": "https://cm.irdnz.localhost/",
+  "SolutionName": "IR.sln",
+  "ProjectFolder": "./",
+  "ProjectBuildFolder": "./build",
+  "BuildConfiguration": "Debug",
+  "BuildToolVersions": "VS2017",
+  "RunCleanBuilds": false,
+  "DeployExmTimeout": 60,
+  "DeploymentTarget": "Local",
+  "DeployFolder": "./artifacts",
+  "version": "0.0.0",
+  "CDN": "false"
+}
