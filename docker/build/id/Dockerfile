@@ -22,6 +22,7 @@ ENV NEW_RELIC_APP_NAME=
 
 RUN Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')); `    
     choco install vim --version 8.2.2519 -y; `
+    choco install far --version 3.0.5800 -y;`
     # Install New Relic 
     New-Item -Path 'C:\\downloads' -ItemType 'Directory' -Force | Out-Null; `
     & curl.exe -sS -L -o c:\\downloads\\newrelic-agent.msi https://download.newrelic.com/dot_net_agent/latest_release/newrelic-agent-win-x64-8.39.1.0.msi; `    

@@ -18,6 +18,7 @@ ENV NEW_RELIC_APP_NAME=
 
 RUN Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')); `    
     choco install vim --version 8.2.2519 -y; `
+    choco install far --version 3.0.5800 -y;`
     # download remote assets
     #New-Item -Path 'C:\\downloads' -ItemType 'Directory' -Force | Out-Null; `
     #& curl.exe -sS -L -o c:\\downloads\\nuget.exe https://dist.nuget.org/win-x86-commandline/v5.2.0/nuget.exe; `    
