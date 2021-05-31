@@ -5,6 +5,7 @@
 .vscode
 build
 docker
+!docker/assets/*
 packages
 **/bin/
 **/obj/

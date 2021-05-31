@@ -10,42 +10,7 @@ services:
         BASE_IMAGE: ${SOLUTION_BASE_IMAGE}
         BUILD_IMAGE: ${SOLUTION_BUILD_IMAGE}
         BUILD_CONFIGURATION: ${BUILD_CONFIGURATION}
-    scale: 0
-    
-  # mssql:
-  #   build:
-  #     isolation: ${ISOLATION}
-  #     context: .\docker\build\mssql\standalone
-  #     dockerfile: ..\standalone\Dockerfile
-  #     args:
-  #       BASE_IMAGE: ${XC_NONPRODUCTION_SITECORE_DOCKER_REGISTRY}sitecore-xc0-mssql:${XC_PACKAGES_TAG}
-  #       SITECORE_CORE_DB: ${SITECORE_CORE_DB}
-  #   image: xc0-mssql
-  
-  # mssql-init:
-  #   build:
-  #     isolation: ${ISOLATION}
-  #     context: .\docker\build\mssql\init
-  #     dockerfile: ..\init\Dockerfile
-  #     args:
-  #       BASE_IMAGE: ${XC_NONPRODUCTION_SITECORE_DOCKER_REGISTRY}sitecore-xc0-mssql-init:${XP_SITECORE_TAG}
-  #       TOPOLOGY: xc0
-  #   image: xc0-mssql-init
-
-  # Mount our Solr data folder
-  # solr:
-  #   volumes:
-  #     - ${LOCAL_DATA_PATH}\solr-data:c:\data
-
-  # solr-init:
-  #   build:
-  #     isolation: ${ISOLATION}
-  #     context: ./docker/build/solr-init
-  #     args:
-  #       BASE_IMAGE: ${XP_SITECORE_DOCKER_REGISTRY}sitecore-xp1-solr-init:${XP_SITECORE_TAG}
-  #       XC_TOPOLOGY: xc1
-  #       SOLR_XDB_SCHEMA_FILE: "/Content/Website/App_Data/solrcommands/schema.json"
-  #   image: xc1-solr-init
+    scale: 0    
   
   mssql:
     build:
@@ -53,22 +18,13 @@ services:
       context: ./docker/build/mssql
       dockerfile: ./standalone/Dockerfile
       args:
-        #BASE_IMAGE: ${XP_SITECORE_DOCKER_REGISTRY}sitecore-xp1-mssql:${XP_SITECORE_TAG}
+        #BASE_IMAGE: ${SITECORE_DOCKER_REGISTRY}sitecore-xp1-mssql:${XP_SITECORE_TAG}
         BASE_IMAGE: ${XC_NONPRODUCTION_SITECORE_DOCKER_REGISTRY}sitecore-xc0-mssql:${XC_PACKAGES_TAG}
         SITECORE_CORE_DB: ${SITECORE_CORE_DB}
     image: xc0-mssql
-  
-  mssql-init:
-    build:
-      isolation: ${ISOLATION}
-      context: ./docker/build/mssql
-      dockerfile: ./init/Dockerfile
-      args:
-        #BASE_IMAGE: ${XP_SITECORE_DOCKER_REGISTRY}sitecore-xp1-mssql-init:${XP_SITECORE_TAG}
-        BASE_IMAGE: mcr.microsoft.com/powershell:lts-nanoserver-1809
-        TOPOLOGY: xc0
-    image: xc0-mssql-init
 
+    
+    
   cm:
     image: ${COMPOSE_PROJECT_NAME}-xp0-cm
     build:
@@ -112,7 +68,7 @@ services:
       - solution
     volumes:
       - ${LOCAL_DEPLOY_PATH}\engine:C:\deploy
-      - ${LOCAL_DATA_PATH}\engine\ops\logs:C:\inetpub\wwwroot\wwwroot\logs        
+      - ${LOCAL_DATA_PATH}\engine\shops\logs:C:\inetpub\wwwroot\wwwroot\logs        
 
   engine-authoring:    
     image: ${COMPOSE_PROJECT_NAME}-xp0-ops
@@ -126,7 +82,7 @@ services:
       - solution
     volumes:
       - ${LOCAL_DEPLOY_PATH}\engine:C:\deploy
-      - ${LOCAL_DATA_PATH}\engine\ops\logs:C:\inetpub\wwwroot\wwwroot\logs        
+      - ${LOCAL_DATA_PATH}\engine\authoring\logs:C:\inetpub\wwwroot\wwwroot\logs        
 
   engine-minions:    
     image: ${COMPOSE_PROJECT_NAME}-xp0-ops
@@ -140,31 +96,75 @@ services:
       - solution
     volumes:
       - ${LOCAL_DEPLOY_PATH}\engine:C:\deploy
-      - ${LOCAL_DATA_PATH}\engine\ops\logs:C:\inetpub\wwwroot\wwwroot\logs        
+      - ${LOCAL_DATA_PATH}\engine\minions\logs:C:\inetpub\wwwroot\wwwroot\logs        
+
+  xconnect:
+    image: ${REGISTRY}${COMPOSE_PROJECT_NAME}-xp0-xconnect:${VERSION:-latest}
+    build:
+      context: ./docker/build/xconnect       
+      args:
+        BASE_IMAGE: ${XC_SITECORE_DOCKER_REGISTRY}sitecore-xc0-xconnect:${XC_PACKAGES_TAG}
+        TOOLING_IMAGE: ${SITECORE_TOOLS_REGISTRY}sitecore-docker-tools-assets:${TOOLS_VERSION}
+        SOLUTION_IMAGE: ${REGISTRY}${COMPOSE_PROJECT_NAME}-solution:${VERSION:-latest}
+    depends_on:
+      - solution 
+    environment:
+      Sitecore_License: ${SITECORE_LICENSE}
+      Sitecore_ConnectionStrings_Messaging: Data Source=mssql;Initial Catalog=Sitecore.Messaging;User ID=sa;Password=${SQL_SA_PASSWORD}
+      Sitecore_ConnectionStrings_Processing.Engine.Storage: Data Source=mssql;Initial Catalog=Sitecore.Processing.Engine.Storage;User ID=sa;Password=${SQL_SA_PASSWORD}
+      Sitecore_ConnectionStrings_Reporting: Data Source=mssql;Initial Catalog=Sitecore.Reporting;User ID=sa;Password=${SQL_SA_PASSWORD}
+      Sitecore_ConnectionStrings_Xdb.Marketingautomation: Data Source=mssql;Initial Catalog=Sitecore.Marketingautomation;User ID=sa;Password=${SQL_SA_PASSWORD}
+      Sitecore_ConnectionStrings_Xdb.Processing.Pools: Data Source=mssql;Initial Catalog=Sitecore.Processing.pools;User ID=sa;Password=${SQL_SA_PASSWORD}
+      Sitecore_ConnectionStrings_Xdb.Referencedata: Data Source=mssql;Initial Catalog=Sitecore.Referencedata;User ID=sa;Password=${SQL_SA_PASSWORD}
+      Sitecore_ConnectionStrings_Collection: Data Source=mssql;Initial Catalog=Sitecore.Xdb.Collection.ShardMapManager;User ID=sa;Password=${SQL_SA_PASSWORD}
+      Sitecore_ConnectionStrings_SolrCore: http://solr:8983/solr/${SOLR_CORE_PREFIX_NAME}_xdb;solrCloud=true
+      Sitecore_Sitecore:XConnect:CollectionSearch:Services:Solr.SolrReaderSettings:Options:RequireHttps: 'false'
+      Sitecore_Sitecore:XConnect:CollectionSearch:Services:XConnectSolrHealthCheckServicesConfiguration:Options:RequireHttps: 'false'
+      Sitecore_Sitecore:XConnect:SearchIndexer:Services:Solr.SolrReaderSettings:Options:RequireHttps: 'false'
+      Sitecore_Sitecore:XConnect:SearchIndexer:Services:Solr.SolrWriterSettings:Options:RequireHttps: 'false'     
+
+  id:
+    image: ${REGISTRY}${COMPOSE_PROJECT_NAME}-xp0-id:${VERSION:-latest}
+    build:
+      context: ./docker/build/id
+      args:
+        BASE_IMAGE: ${XC_SITECORE_DOCKER_REGISTRY}sitecore-xc-id:${XC_PACKAGES_TAG}
+        TOOLING_IMAGE: ${SITECORE_TOOLS_REGISTRY}sitecore-docker-tools-assets:${TOOLS_VERSION}
+        SOLUTION_IMAGE: ${REGISTRY}${COMPOSE_PROJECT_NAME}-solution:${VERSION:-latest}
+    depends_on:
+      - solution            
+
+
+  #volumes:
+  #  - ${LOCAL_DEPLOY_PATH}\xconnect:C:\deploy
+  #entrypoint: powershell -Command "& C:\tools\entrypoints\iis\Development.ps1"
 
   # ============================================================
-
-
-  # xconnect:
-  #   image: ${REGISTRY}${COMPOSE_PROJECT_NAME}-xp0-xconnect:${VERSION:-latest}
-  #   build:
-  #     context: ./docker/build/xconnect
-  #     args:
-  #       BASE_IMAGE: ${SITECORE_DOCKER_REGISTRY}sitecore-xp0-xconnect:${SITECORE_VERSION}
-  #       TOOLING_IMAGE: ${SITECORE_TOOLS_REGISTRY}sitecore-docker-tools-assets:${TOOLS_VERSION}
-  #       SOLUTION_IMAGE: ${REGISTRY}${COMPOSE_PROJECT_NAME}-solution:${VERSION:-latest}
-  #   depends_on:
-  #     - solution
+  
+  # Mount our Solr data folder
+  # solr:
   #   volumes:
-  #     - ${LOCAL_DEPLOY_PATH}\xconnect:C:\deploy
-  #   entrypoint: powershell -Command "& C:\tools\entrypoints\iis\Development.ps1"
+  #     - ${LOCAL_DATA_PATH}\solr-data:c:\data
+
+  # solr-init:
+  #   build:
+  #     isolation: ${ISOLATION}
+  #     context: ./docker/build/solr-init
+  #     args:
+  #       BASE_IMAGE: ${SITECORE_DOCKER_REGISTRY}sitecore-xp1-solr-init:${XP_SITECORE_TAG}
+  #       XC_TOPOLOGY: xc1
+  #       SOLR_XDB_SCHEMA_FILE: "/Content/Website/App_Data/solrcommands/schema.json"
+  #   image: xc1-solr-init
+  
+
+ 
 
   # xdbsearchworker:
   #   image: ${REGISTRY}${COMPOSE_PROJECT_NAME}-xp0-xdbsearchworker:${VERSION:-latest}
   #   build:
   #     context: ./docker/build/xdbsearchworker
   #     args:
-  #       BASE_IMAGE: ${SITECORE_DOCKER_REGISTRY}sitecore-xp0-xdbsearchworker:${SITECORE_VERSION}
+  #       BASE_IMAGE: ${SITECORE_DOCKER_REGISTRY}sitecore-xp0-xdbsearchworker:${XP_SITECORE_TAG}
   #       SOLUTION_IMAGE: ${REGISTRY}${COMPOSE_PROJECT_NAME}-solution:${VERSION:-latest}
   #   depends_on:
   #     - solution
@@ -174,7 +174,7 @@ services:
   #   build:
   #     context: ./docker/build/xdbautomationworker
   #     args:
-  #       BASE_IMAGE: ${SITECORE_DOCKER_REGISTRY}sitecore-xp0-xdbautomationworker:${SITECORE_VERSION}
+  #       BASE_IMAGE: ${SITECORE_DOCKER_REGISTRY}sitecore-xp0-xdbautomationworker:${XP_SITECORE_TAG}
   #       SOLUTION_IMAGE: ${REGISTRY}${COMPOSE_PROJECT_NAME}-solution:${VERSION:-latest}
   #   depends_on:
   #     - solution
@@ -184,7 +184,7 @@ services:
   #   build:
   #     context: ./docker/build/cortexprocessingworker
   #     args:
-  #       BASE_IMAGE: ${SITECORE_DOCKER_REGISTRY}sitecore-xp0-cortexprocessingworker:${SITECORE_VERSION}
+  #       BASE_IMAGE: ${SITECORE_DOCKER_REGISTRY}sitecore-xp0-cortexprocessingworker:${XP_SITECORE_TAG}
   #       SOLUTION_IMAGE: ${REGISTRY}${COMPOSE_PROJECT_NAME}-solution:${VERSION:-latest}
   #   depends_on:
   #     - solution

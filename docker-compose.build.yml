@@ -6,7 +6,7 @@ services:
       context: ../xc-common/mssql/common
       dockerfile: ../standalone/Dockerfile
       args:
-        BASE_IMAGE: ${XP_SITECORE_DOCKER_REGISTRY}sitecore-xp0-mssql:${XP_SITECORE_TAG}
+        BASE_IMAGE: ${SITECORE_DOCKER_REGISTRY}sitecore-xp0-mssql:${XP_SITECORE_TAG}
         SITECORE_CORE_DB: ${SITECORE_CORE_DB}
     image: sitecore-xc0-mssql
   solr-init:
@@ -15,7 +15,7 @@ services:
       isolation: ${ISOLATION}
       context: ../xc-common/solr-init
       args:
-        BASE_IMAGE: ${XP_SITECORE_DOCKER_REGISTRY}sitecore-xp0-solr-init:${XP_SITECORE_TAG}
+        BASE_IMAGE: ${SITECORE_DOCKER_REGISTRY}sitecore-xp0-solr-init:${XP_SITECORE_TAG}
         XC_TOPOLOGY: xc0
         SOLR_XDB_SCHEMA_FILE: "/Content/Website/App_Data/solrcommands/schema.json"
   cm:
@@ -24,7 +24,7 @@ services:
       context: ./cm
       dockerfile: ../../xc-common/cd-cm/Dockerfile
       args:
-        BASE_IMAGE: ${XP_SITECORE_DOCKER_REGISTRY}sitecore-xp0-cm:${XP_SITECORE_TAG}
+        BASE_IMAGE: ${SITECORE_DOCKER_REGISTRY}sitecore-xp0-cm:${XP_SITECORE_TAG}
         XC_RESOURCES_IMAGE: xc-resources:latest
         XC_RESOURCES_CONFIGS: cm,cmxc0
     image: sitecore-xc0-cm
@@ -34,7 +34,7 @@ services:
       context: ./xconnect
       dockerfile: ../../xc-common/xdbautomation/Dockerfile
       args:
-        BASE_IMAGE: ${XP_SITECORE_DOCKER_REGISTRY}sitecore-xp0-xconnect:${XP_SITECORE_TAG}
+        BASE_IMAGE: ${SITECORE_DOCKER_REGISTRY}sitecore-xp0-xconnect:${XP_SITECORE_TAG}
         CONTENT_PATH: wdp
     image: sitecore-xc0-xconnect
   xdbsearchworker:
@@ -42,7 +42,7 @@ services:
       isolation: ${ISOLATION}
       context: ../xc-common/xdbworkers
       args:
-        BASE_IMAGE: ${XP_SITECORE_DOCKER_REGISTRY}sitecore-xp0-xdbsearchworker:${XP_SITECORE_TAG}
+        BASE_IMAGE: ${SITECORE_DOCKER_REGISTRY}sitecore-xp0-xdbsearchworker:${XP_SITECORE_TAG}
         CONTENT_PATH: xdbsearchworker/wdp/App_Data/jobs/continuous/IndexWorker
     image: sitecore-xc0-xdbsearchworker
   xdbautomationworker:
@@ -50,6 +50,6 @@ services:
       isolation: ${ISOLATION}
       context: ../xc-common/xdbworkers
       args:
-        BASE_IMAGE: ${XP_SITECORE_DOCKER_REGISTRY}sitecore-xp0-xdbautomationworker:${XP_SITECORE_TAG}
+        BASE_IMAGE: ${SITECORE_DOCKER_REGISTRY}sitecore-xp0-xdbautomationworker:${XP_SITECORE_TAG}
         CONTENT_PATH: xdbautomationworker/wdp/App_Data/jobs/continuous/AutomationEngine
     image: sitecore-xc0-xdbautomationworker

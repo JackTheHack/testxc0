@@ -5,15 +5,11 @@ ARG BASE_IMAGE
 
 FROM ${BASE_IMAGE}
 
-#ARG SITECORE_CORE_DB
-#ENV SITECORE_CORE_DB=${SITECORE_CORE_DB}
+ENV DATA_PATH='C:\\data\\'
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
-COPY ./dacpacs ./dacpacs
-#COPY ./tools/DeployRoles.ps1 ./xc/tools/
+COPY ./dacpacs C:\fs_db
 
-#RUN C:\DeployDatabases.ps1 -ResourcesDirectory C:\dacpacs -DatabaseOwner "sa" -EnableContainedDatabaseAuth; `
- #   .\xc\tools\DeployRoles.ps1 -coreDatabaseName $env:SITECORE_CORE_DB; `
-  #  Remove-Item .\dacpacs -Recurse -Force; `
-   # Remove-Item .\xc -Recurse -Force;
+RUN C:\DeployDatabases.ps1 -ResourcesDirectory C:\fs_db
+RUN Remove-Item C:\fs_db -Recurse -Force;

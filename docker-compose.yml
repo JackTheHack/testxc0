@@ -52,7 +52,7 @@ services:
     isolation: ${ISOLATION}
     ports:
       - "8984:8983"
-    image: ${XP_SITECORE_DOCKER_REGISTRY}nonproduction/solr:8.4.0-${XP_SITECORE_TAG}
+    image: ${SITECORE_DOCKER_REGISTRY}nonproduction/solr:8.4.0-${XP_SITECORE_TAG}
     volumes:
       - type: bind
         source: .\docker\data\solr-data
@@ -72,7 +72,7 @@ services:
         condition: service_healthy
   redis:
       isolation: ${ISOLATION}
-      image: ${XP_SITECORE_DOCKER_REGISTRY}sitecore-redis:${XP_SITECORE_TAG}
+      image: ${SITECORE_DOCKER_REGISTRY}sitecore-redis:${XP_SITECORE_TAG}
       restart: unless-stopped
   id:
     isolation: ${ISOLATION}
@@ -186,6 +186,7 @@ services:
     healthcheck:
       test: ["CMD", "powershell", "-command", "C:/Healthchecks/Healthcheck.ps1"]
       timeout: 300s
+      
   xdbsearchworker:
     isolation: ${ISOLATION}
     image: ${XC_SITECORE_DOCKER_REGISTRY}sitecore-xc0-xdbsearchworker:${XC_PACKAGES_TAG}
@@ -221,7 +222,7 @@ services:
       timeout: 300s
   cortexprocessingworker:
     isolation: ${ISOLATION}
-    image: ${XP_SITECORE_DOCKER_REGISTRY}sitecore-xp0-cortexprocessingworker:${XP_SITECORE_TAG}
+    image: ${SITECORE_DOCKER_REGISTRY}sitecore-xp0-cortexprocessingworker:${XP_SITECORE_TAG}
     depends_on:
       xconnect:
         condition: service_healthy
