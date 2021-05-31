@@ -277,12 +277,18 @@ FrontEnd/build/
 
 # docker
 /docker/data/cm/*/*
+!/docker/data/cm/*/.gitkeep
 /docker/data/engine/catalogs/*
+!/docker/data/engine/catalogs/.gitkeep
 /docker/data/engine/*/*/*
+!/docker/data/engine/*/*/.gitkeep
 /docker/data/mssql-data/*
+!/docker/data/mssql-data/.gitkeep
 /docker/data/solr-data/*
+!/docker/data/solr-data/.gitkeep
 
 /docker/deploy/*/*
+!/docker/deploy/*/.gitkeep
 .env
 
 # secrets
