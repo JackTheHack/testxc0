@@ -278,6 +278,7 @@ FrontEnd/build/
 # docker
 /docker/data/cm/*/*
 !/docker/data/cm/*/.gitkeep
+!/docker/data/cm/domains-shared/Domains.config
 /docker/data/engine/catalogs/*
 !/docker/data/engine/catalogs/.gitkeep
 /docker/data/engine/*/*/*
